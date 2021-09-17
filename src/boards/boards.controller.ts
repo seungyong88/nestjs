@@ -1,7 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { BoardsService } from "./boards.service";
-import { Board, BoardStatus } from "./board.model";
-import { v1 as uuid } from 'uuid';
+import { Board } from "./board.model";
 
 @Controller('boards')
 export class BoardsController {
@@ -13,15 +12,14 @@ export class BoardsController {
   getAllBoard(): Board[] {
     return this.boardsService.getAllBoard();
   }
-
-
-  createBoard(title: string, description: string) {
-    const board: Board = {
-      id: uuid(), // 유니크한 값을 게시판 id에 줄수 있음
-      title,
-      description,
-      status: BoardStatus.PUBLIC
-    }
+ 
+  // @Body('title') title or @Body('desctiption') desctiption
+  @Post()
+  createBoard(
+    @Body('title') title: string,
+    @Body('description') description: string,
+  ):Board {
+    return this.boardsService.createBoard(title, description);
   }
 
 }
