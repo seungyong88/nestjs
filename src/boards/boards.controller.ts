@@ -1,25 +1,38 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Board, BoardStatus } from './board.model';
 import { BoardsService } from "./boards.service";
-import { Board } from "./board.model";
+import { CreateBoardDto } from './dto/create-board.dto';
 
 @Controller('boards')
 export class BoardsController {
-  constructor(private boardsService: BoardsService) {
-     
-  }
+  constructor(private boardsService: BoardsService) {}
 
   @Get('/')
   getAllBoard(): Board[] {
-    return this.boardsService.getAllBoard();
+    return this.boardsService.getAllBoards();
   }
- 
-  // @Body('title') title or @Body('desctiption') desctiption
-  @Post()
-  createBoard(
-    @Body('title') title: string,
-    @Body('description') description: string,
-  ):Board {
-    return this.boardsService.createBoard(title, description);
+
+  // @Body('title') title: string, 
+  // @Body('description') description: string,
+  @Post('/')
+  @UsePipes(ValidationPipe)
+  createBoard(@Body() createdBoardDto: CreateBoardDto): Board {
+    return this.boardsService.createBoard(createdBoardDto);
+  }
+
+  @Get('/:id')
+  getBoardById(@Param('id') id: string): Board {
+    return this.boardsService.getBoardById(id);
+  }
+
+  @Delete('/:id')
+  deleteBoard(@Param('id') id: string): void {
+    this.boardsService.deleteBoard(id);
+  }
+  
+  @Patch('/:id/status')
+  updateBoardStatus(@Param('id') id: string, @Body('status') status: BoardStatus) {
+    return this.boardsService.updateBoardStatus(id, status);
   }
 
 }
